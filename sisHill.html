@@ -9,44 +9,55 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
         <script>
         
-        const loadFile = function(event, display) {
-            /*
-            Shows the image on "event" on the screen.
-            */
-	        var image = document.getElementById(display);
-            console.log(typeof(image));
-	        image.src = URL.createObjectURL(event.target.files[0]);
-            console.log(getPixelval(image, 20, 300));
-        };
+const url = "http://localhost:5000/hill/";
 
-        const getPixelval = (img, x, y) => {
-            /*
-            Gets the array of pixels asociated with the image
-            */
-            
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0); // URL.createObjectURL(event.target.files[0])
-            console.log(img.width, img.height);
-            return ctx.getImageData(x, y, 1, 1).data.entries;
+const handleCypher = (mode) => {
+    if(mode == "encrypt"){
+        let text = document.getElementById("inputTextVigenere").value;
+        let key = document.getElementById("vigenereKey").value;
+        if(!key){
+            key = generateKey();
+            document.getElementById("vigenereKey").value = key
         }
-
-        const handleCypher = () => {
-            const image = document.querySelector('#imageEncrypt');
-            image.addEventListener('change', () => {
-                const reader = new FileReader();
-
-                reader.addEventListener("load", () => {
-                    
-                });
-
-                reader.readAsDataURL(image.files[0]);
+        const sendInfo = {"plaintext": text, "key": key};
+        fetch(url + 'enc', {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+            headers:{
+                'Content-Type': 'application/json'
+            }})
+            .then(function(response) {
+                return response.json();
             })
-         
+            .then(function(jsonResponse) {
+                // do something with jsonResponse
+                document.getElementById("outputTextVigenere").value = jsonResponse.ciphertext;
+            });
 
-            
-            // getPixelval(image.value, 2, 2);
+    } else if (mode == "decrypt") {
+        let text = document.getElementById("inputTextVigenere").value;
+        let key = document.getElementById("vigenereKey").value;
+        if(!key){
+            key = generateKey();
+            document.getElementById("vigenereKey").value = key
         }
+        const sendInfo = {"ciphertext": text, "key": key};
+        fetch(url + 'dec', {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+            headers:{
+                'Content-Type': 'application/json'
+            }})
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                // do something with jsonResponse
+                document.getElementById("outputTextVigenere").value = jsonResponse.plaintext;
+            });
+    }
+}
+
         </script>
 	</head>
 

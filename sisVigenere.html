@@ -10,6 +10,72 @@
   <noscript>
     <link rel="stylesheet" href="assets/css/noscript.css" />
   </noscript>
+  <script>
+    const random = (min, max) => {return Math.floor(Math.random() * (max - min) + min)};
+        const abc = 'abcdefghijklmnopqrstuvwxyz';
+        const generateKey = ()=>{
+            let lenkey = random(4, 9);
+            const temp = [];
+            for (let i = 0; i < lenkey; i++) {
+                temp.push(i);
+            }
+            const key = [];
+            for (let i = 1; i <= lenkey; i++) {
+                key.push(abc[temp.splice(random(0, temp.length), 1)]);
+            }
+            return key.join('').toUpperCase();
+
+        }
+
+        const url = "http://localhost:5000/vig/";
+
+        const handleCypher = (mode) => {
+            if(mode == "encrypt"){
+                let text = document.getElementById("inputTextVigenere").value;
+                let key = document.getElementById("vigenereKey").value;
+                if(!key){
+                    key = generateKey();
+                    document.getElementById("vigenereKey").value = key
+                }
+                const sendInfo = {"plaintext": text, "key": key};
+                fetch(url + 'enc', {
+                    method: 'POST', // or 'PUT'
+                    body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(jsonResponse) {
+                        // do something with jsonResponse
+                        document.getElementById("outputTextVigenere").value = jsonResponse.ciphertext;
+                    });
+
+            } else if (mode == "decrypt") {
+                let text = document.getElementById("inputTextVigenere").value;
+                let key = document.getElementById("vigenereKey").value;
+                if(!key){
+                    key = generateKey();
+                    document.getElementById("vigenereKey").value = key
+                }
+                const sendInfo = {"ciphertext": text, "key": key};
+                fetch(url + 'dec', {
+                    method: 'POST', // or 'PUT'
+                    body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(jsonResponse) {
+                        // do something with jsonResponse
+                        document.getElementById("outputTextVigenere").value = jsonResponse.plaintext;
+                    });
+            }
+        }
+  </script>
 </head>
 
 <body class="is-preload">
@@ -102,8 +168,8 @@
                   <br>
                   <br>
                   <div class="col-lg-4">
-                    <a href="#" class="button primary" onclick="vigenereCipher(false)">Encrypt</a>
-                    <a href="#" class="button primary" onclick="vigenereCipher(true)">Decrypt</a>
+                    <a href="#" class="button primary" onclick="handleCypher('encrypt')">Encrypt</a>
+                    <a href="#" class="button primary" onclick="handleCypher('decrypt')">Decrypt</a>
                   </div>
 
                 </div>

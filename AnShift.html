@@ -7,6 +7,35 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <script>
+
+        const url = "http://localhost:5000/shift/atk";
+
+        const handleCypher = () => {
+          let text = document.getElementById("inputTextEncrypt").value;
+          document.getElementById("outputText").value = '';
+          const sendInfo = {"ciphertext": text, "head": '26'};
+          fetch(url, {
+              method: 'POST', // or 'PUT'
+              body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+              headers:{
+                  'Content-Type': 'application/json'
+              }})
+              .then(function(response) {
+                  return response.json();
+              })
+              .then(function(jsonResponse) {
+                  // do something with jsonResponse
+                  console.log(jsonResponse)
+                  for (let i = 0; i < jsonResponse.plaintext_attempts.length; i++) {
+                    const attempt = jsonResponse.plaintext_attempts[i][0];
+                    document.getElementById("outputText").value += attempt + ', ' + i + '\n';
+                  }
+                  
+              });
+
+        }
+    </script>
 	</head>
 	<body class="is-preload">
 		<div id="page-wrapper">
@@ -89,17 +118,14 @@
                                   
                                   <div class="text-center">
                                       <button id="submitButtoncrypt" type="button"
-                                              class="button primary">Attack
+                                              class="button primary" onclick="handleCypher()">Attack
                                       </button>
                                   </div>
                               </form>
-                          </div>
-                          <div id="encryptionResultsDiv" class="row mt-5" style="display: none;">
-                              <hr>
-                              <h4 class="card-subtitle mt-2 mb-4 text-center">Results</h4>
-                              <p><b>Encryption: </b><span id="cardEncryptionText"></span></p>
-                              <p><b>Key Used: </b><span id="cardEncryptionKey"></span></p>
-                          </div>      
+                              <div class="col-lg-11">
+                                <textarea id="outputText" class="form-control" rows="3"></textarea>
+                              </div>
+                          </div> 
                         </div>   
 
 

@@ -10,6 +10,74 @@
     <noscript>
         <link rel="stylesheet" href="assets/css/noscript.css" />
     </noscript>
+
+    <script>
+        const random = (min, max) => {return Math.floor(Math.random() * (max - min) + min)};
+        const abc = 'abcdefghijklmnopqrstuvwxyz';
+        const generateKey = ()=>{
+            let lenkey = 26;
+            const temp = [];
+            for (let i = 0; i < lenkey; i++) {
+                temp.push(i);
+            }
+            const key = [];
+            for (let i = 1; i <= lenkey; i++) {
+                key.push(abc[temp.splice(random(0, temp.length), 1)]);
+            }
+            return key.join('');
+
+        }
+
+        const url = "http://localhost:5000/subs/";
+
+        const handleCypher = (mode) => {
+            if(mode == "encrypt"){
+                let text = document.getElementById("textEncrypt").value;
+                let key = document.getElementById("keyEncrypt").value;
+                if(!key){
+                    key = generateKey();
+                    document.getElementById("keyEncrypt").value = "Example: " + key
+                }
+                const sendInfo = {"plaintext": text, "key": key};
+                fetch(url + 'enc', {
+                    method: 'POST', // or 'PUT'
+                    body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(jsonResponse) {
+                        // do something with jsonResponse
+                        document.getElementById("outputEncrypt").value = jsonResponse.ciphertext;
+                    });
+
+            } else if (mode == "decrypt") {
+                let text = document.getElementById("textDecrypt").value;
+                let key = document.getElementById("keyDecrypt").value;
+                if(!key){
+                    key = generateKey();
+                    document.getElementById("keyDecrypt").value = "Example: " + key
+                }
+                const sendInfo = {"ciphertext": text, "key": key};
+                fetch(url + 'dec', {
+                    method: 'POST', // or 'PUT'
+                    body: JSON.stringify(sendInfo), // data can be `string` or {object}!
+                    headers:{
+                        'Content-Type': 'application/json'
+                    }})
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(jsonResponse) {
+                        // do something with jsonResponse
+                        document.getElementById("outputDecrypt").value = jsonResponse.plaintext;
+                    });
+            }
+        }
+    </script>
+</head>
     <!-- Header -->
     <header id="header">
         <h1 id="logo"><a href="index.html">CriptoMonkas!</a></h1>
@@ -58,18 +126,6 @@
         </nav>
     </header>
 
-<<<<<<< HEAD
-    <!-- Main -->
-    <div id="main" class="wrapper style1">
-        <div class="container">
-            <header class="major">
-                <h2>Shift criptographic system</h2>
-                <p>This cypher uses a table which tells which character should be exchanged by which character
-                    on the process. Almost every cypher that only deals with singular characters is a
-                    particular case of this system, since every way to shuffle characters is valid here.
-                </p>
-            </header>
-=======
 			<!-- Main -->
 				<div id="main" class="wrapper style1">
 					<div class="container">
@@ -80,7 +136,6 @@
                                 particular case of this system, since every way to shuffle characters is valid here.
                             </p>
 						</header>
->>>>>>> d43257fa8b34fce2b376a0fb486cca5616364530
 
             <!-- Content -->
 
@@ -176,9 +231,4 @@
 
             </body>
 
-<<<<<<< HEAD
 </html>
-=======
-	</body>
-</html>
->>>>>>> d43257fa8b34fce2b376a0fb486cca5616364530
